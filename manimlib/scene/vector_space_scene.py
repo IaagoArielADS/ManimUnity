@@ -277,6 +277,29 @@ class VectorScene(Scene):
 class LinearTransformationScene(VectorScene):
     CONFIG = {
         "include_background_plane": True,
+        "include_foreground_plane": False,
+        "foreground_plane_kwargs": {
+            "x_radius": FRAME_WIDTH,
+            "y_radius": FRAME_HEIGHT,
+            "secondary_line_ratio": 0
+        },
+        "background_plane_kwargs": {
+            "color": GREY,
+            "secondary_color": BLACK,
+            "axes_color": GREY,
+            "stroke_width": 1,
+        },
+        "show_coordinates": True,
+        "show_basis_vectors": True,
+        "basis_vector_stroke_width": 6,
+        "i_hat_color": X_COLOR,
+        "j_hat_color": Y_COLOR,
+        "leave_ghost_vectors": False,
+        "t_matrix": [[3, 0], [1, 2]],
+    }
+    """
+    CONFIG = {
+        "include_background_plane": True,
         "include_foreground_plane": True,
         "foreground_plane_kwargs": {
             "x_radius": FRAME_WIDTH,
@@ -297,6 +320,7 @@ class LinearTransformationScene(VectorScene):
         "leave_ghost_vectors": False,
         "t_matrix": [[3, 0], [1, 2]],
     }
+    """
 
     def setup(self):
         # The has_already_setup attr is to not break all the old Scenes

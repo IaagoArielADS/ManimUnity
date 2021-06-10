@@ -1,0 +1,2 @@
+file 'C:/Manim/manim_3_feb/media/videos/determinante/1440p60/partial_movie_files/LinearTransformation/00000.mp4'
+file 'C:/Manim/manim_3_feb/media/videos/determinante/1440p60/partial_movie_files/LinearTransformation/00001.mp4'
