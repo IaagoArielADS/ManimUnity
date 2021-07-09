@@ -1,5 +1,11 @@
 from big_ol_pile_of_manim_imports import *
 
+class Cell(Rectangle):
+    def moveWhileChangingColor(self,color,newpos):
+        self.set_fill(color)
+        self.move_to(newpos)
+        return self
+
 class Unity:
     def __init__(self,width,nColumns,nRows,position, cells = [], omitted = False):
         self.width = width
@@ -9,9 +15,22 @@ class Unity:
         self.cells = cells
         self.omitted = omitted
         self.unitySquare = Square(side_length=self.width).move_to(self.position)
+        self.value = [0,0]
         if(self.cells == []):
             self.createCells()
-        
+    
+    def countValue(self):
+        neg = 0
+        pos = 0
+        for k in range(self.nRows*self.nColumns):
+            if self.cells[k].get_fill_color() == BLUE:
+                pos+=1
+            elif self.cells[k].get_fill_color() == RED:
+                neg+=1
+        self.value[0]=pos
+        self.value[1]=neg
+            
+
     def setWidth(self, newWidth):
         self.width = newWidth
 
@@ -44,12 +63,13 @@ class Unity:
         for i in range(self.nRows):
             for j in range(self.nColumns):
                 self.cells.append(
-                    Rectangle(height=self.width/self.nRows,width=self.width/self.nColumns,fill_opacity=0).move_to(
+                    Cell(height=self.width/self.nRows,width=self.width/self.nColumns,fill_opacity=0).move_to(
                         self.unitySquare.get_center()
                         +self.width*(1 - (1+2*(j))/self.nColumns)/2*LEFT
                         +self.width*(1 - (1 + 2*(i))/self.nRows)/2*UP
                     )
                 )
+        self.countValue()
 
     def updateCellsPosition(self):
         for k in range(self.nRows*self.nColumns):
@@ -74,7 +94,7 @@ class Unity:
                 i = k // (self.nColumns // n)
                 j = (k*(n) + l) % self.nColumns
                 self.cells.append(
-                    Rectangle(height=self.width/self.nRows,width=self.width/self.nColumns,fill_opacity=0).move_to(
+                    Cell(height=self.width/self.nRows,width=self.width/self.nColumns,fill_opacity=0).move_to(
                         self.unitySquare.get_center()
                         +self.width*(1 - (1+2*(j))/self.nColumns)/2*LEFT
                         +self.width*(1 - (1 + 2*(i))/self.nRows)/2*UP
@@ -95,7 +115,7 @@ class Unity:
                     i = k*n + l
                     j = m % self.nColumns
                     self.cells.append(
-                        Rectangle(height=self.width/self.nRows,width=self.width/self.nColumns,fill_opacity=0).move_to(
+                        Cell(height=self.width/self.nRows,width=self.width/self.nColumns,fill_opacity=0).move_to(
                             self.unitySquare.get_center()
                             +self.width*(1 - (1+2*(j))/self.nColumns)/2*LEFT
                             +self.width*(1 - (1 + 2*(i))/self.nRows)/2*UP
@@ -120,7 +140,7 @@ class Unity:
             for r in range(nr):
                 for c in range(nc):
                     self.cells.append(
-                        Rectangle(
+                        Cell(
                             height=self.width/self.nRows,
                             width=self.width/self.nColumns,
                             fill_opacity=0
@@ -150,7 +170,7 @@ class Unity:
             for r in range(nr):
                 for c in range(nc):
                     self.cells.append(
-                        Rectangle(
+                        Cell(
                             height=self.width/self.nRows,
                             width=self.width/self.nColumns,
                             fill_opacity=0
