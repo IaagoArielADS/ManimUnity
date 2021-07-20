@@ -17,8 +17,12 @@ class Teste(Scene):
         #self.multiplicar("-3/5","2/4") 
         #self.multiplicar("1/5","3/4") 
         #self.multiplicar("-1/5","-2/4") 
-        self.multiplicar("4/5","-1/4") 
-
+        #self.multiplicar("4/5","-1/4") 
+        
+        #self.dividir("1/4","1/3")
+        #self.dividir("-1/4","1/3")
+        self.dividir("1/4","-1/3")
+        #self.dividir("-1/4","-1/3")
         #self.sample1()
         
     def sample1(self):
@@ -73,6 +77,131 @@ class Teste(Scene):
         self.wait()
 
         self.multiplyUnits(u2, u3, nonColoredCells, "FadeIn", BLACK)
+
+    def dividir(self, n1, n2):
+        # transforma a string recebida em 4 variáveis:
+        # Numerador e Denominador de cada fração.
+
+        info = (n1+"/"+n2).split("/")
+        a = int(info[0])
+        b = int(info[1])
+        c = int(info[2])
+        d = int(info[3])
+        
+        division = (a/b) / (c/d)
+
+        if abs(division) > 1:
+            raise Exception("Ainda não é possível efetuar divisões cujo resultado é maior que 1.\nSua divisão deu "+str(division))
+
+        if a<0:
+            cor1=RED
+        else:
+            cor1=BLUE
+
+        if c<0:
+            cor2=RED
+        else:
+            cor2=BLUE
+
+        if cor2 == cor1:
+            cor3 = BLUE
+        else:
+            cor3 = RED
+
+        titulo = TexMobject(
+            r"\text{Vamos resolver }{"+str(a)+r"\phantom{}"+r"\over"+str(b)+r"} : {"+str(c)+r"\phantom{}"+r"\over"+str(d)+r"}",
+            tex_to_color_map={"{"+str(a)+r"\phantom{}": cor1,"{"+str(c)+r"\phantom{}": cor2}
+        ).to_corner(UP)
+        
+        self.play(Write(
+            titulo
+        ))
+
+        # Criar unidades (Denominadores)
+
+        UNITY_WIDTH = 2
+        position1 = 3*LEFT 
+        position2 = 0*RIGHT
+        position3 = 3*RIGHT
+        positionEquals = 1.5*RIGHT
+        positionDiv = 1.5*LEFT 
+
+        u1 = Unity(width=UNITY_WIDTH, nColumns = b, nRows = 1, position = position1, cells=[])
+        u2 = Unity(width=UNITY_WIDTH, nColumns = 1, nRows = d, position = position2, cells=[])
+        u3 = Unity(width=UNITY_WIDTH, nColumns = b, nRows = d, position = position3, cells=[])
+
+        # Pintar os numeradores de acordo com as frações recebidas
+
+        h1 = [] 
+        h2 = []
+        
+        for i in range(abs(a)): 
+            h1.append(i)
+        for i in range(abs(c)): 
+            h2.append(abs(c)-i-1)
+
+        u1.highLightCells(h1, cor1)
+        u2.highLightCells(h2, cor2)
+
+        # Mostrar a Unidade 1
+
+        self.plotUnity(u1)
+        
+        # Criar e mostrar o sinal de divisão
+
+        plus = TexMobject(r":").move_to(positionDiv)
+        
+        self.play(Write(
+            plus
+        ))
+        
+        # Mostrar a Unidade 2
+
+        self.plotUnity(u2)
+        
+        # Criar e mostrar o sinal de igual
+
+        equals = TexMobject(r"=").move_to(positionEquals)
+
+        self.play(Write(
+            equals
+        ))
+
+        # Particionar
+
+        u1 = self.partitionate(u1,"HORIZONTAL",d)
+
+        u2 = self.partitionate(u2,"VERTICAL",b)
+
+        o1 = u1.getCellsByColor([BLUE,RED])
+        o2 = u2.getCellsByColor([BLUE,RED])
+
+        t1=[]
+        t2=[]
+
+        for i in range(len(o2)):
+            t2.append(i)
+        for i in range(len(o1)):
+            t1.append(i)
+
+        #self.transferDestroyCells(u2,u3,o2,t2)
+        self.play(
+            *[
+                TransformFromCopy(u2.cells[k],u3.cells[k])
+                for k in range(len(t2))
+            ],
+            *[
+                Transform(u2.cells[k],u2.cells[k].set_fill(u2.cells[k].get_fill_color(),opacity=0.3))
+                for k in range(len(t2))
+            ]
+        )
+
+        self.transferDestroyCells(u1,u3,o1,t1,cor1,0.3,cor3)
+
+        u2.highLightCells(o2,cor2)
+        u1.highLightCells(o1,cor1)
+        
+        self.wait()
 
     def multiplicar(self,n1,n2):
         # transforma a string recebida em 4 variáveis:
@@ -799,7 +928,7 @@ class Teste(Scene):
         else:
             print("not ok")
     
-    def transferDestroyCells(self,unity1,unity2,origin,target,fillColor = BLUE,opacity = 0.3):
+    def transferDestroyCells(self,unity1,unity2,origin,target,fillColor = BLUE,opacity = 0.3,newColor = BLACK):
         u1 = unity1
         u2 = unity2
         o = origin
@@ -845,7 +974,7 @@ class Teste(Scene):
                 
                 *[
                     ApplyMethod(
-                        u2.cells[t[i]].moveWhileChangingColor,BLACK,junk[i].get_center()
+                        u2.cells[t[i]].moveWhileChangingColor,newColor,junk[i].get_center()
                     )
                     for i in range(l)
                 ]
@@ -1042,6 +1171,6 @@ class Teste(Scene):
         else:
             print("Multiply function -> Your animation atribute has no valid animations")
 
-    
+
 
 # See old_projects folder for many, many more
