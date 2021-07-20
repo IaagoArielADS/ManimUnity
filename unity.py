@@ -1,5 +1,9 @@
 from big_ol_pile_of_manim_imports import *
 
+def orderCells(c):
+    pos = c.get_center() - (c.width/2)*RIGHT - (c.height/2)*DOWN
+    return [-pos[1],pos[0]]
+
 class Cell(Rectangle):
     def moveWhileChangingColor(self,color,newpos):
         self.set_fill(color)
@@ -30,7 +34,6 @@ class Unity:
         self.value[0]=pos
         self.value[1]=neg
             
-
     def setWidth(self, newWidth):
         self.width = newWidth
 
@@ -51,11 +54,11 @@ class Unity:
                 self.cells[i].set_fill(fillColor,opacity)
 
     def highLightClear(self):
-        for i in range(self.nRows*self.nColumns):
+        for i in range(len(self.cells)):
             self.cells[i].set_fill(BLACK,0)
 
     def highLightCells(self, ns, fillColor, opacity = 1):
-        for i in range(self.nRows*self.nColumns):
+        for i in range(len(self.cells)):
             if i in ns:
                 self.cells[i].set_fill(fillColor,opacity)
 
@@ -210,3 +213,28 @@ class Unity:
             nr1 = p
 
         self.cells = c2
+    
+    def sortCells(self):
+        self.cells.sort(key=orderCells)
+
+    def getCellsByColor(self, colorArray):
+        coloredCells = []
+        for i in range(len(self.cells)):
+            print(self.cells[i].get_fill_color())
+            print(colorArray[0])
+            if str(self.cells[i].get_fill_color()).upper() in colorArray:
+                coloredCells.append(i)
+        return coloredCells
+
+    def getColorOfAllCells(self, fillWhiteWithBlack = True):
+        colorArray=[]
+        for i in range(len(self.cells)):
+            if fillWhiteWithBlack:
+                if str(self.cells[i].get_fill_color()) == "white":
+                    colorArray.append(BLACK)
+                else:
+                    colorArray.append(self.cells[i].get_fill_color())
+            else:
+                colorArray.append(self.cells[i].get_fill_color())
+        print(colorArray)
+        return colorArray
