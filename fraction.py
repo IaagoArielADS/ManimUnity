@@ -21,10 +21,18 @@ class Teste(Scene):
         
         #self.dividir("1/4","1/3")
         #self.dividir("-1/4","1/3")
-        self.dividir("1/4","-1/3")
+        #self.dividir("2/4","-2/3")
+        #self.dividir("2/4","2/3")
         #self.dividir("-1/4","-1/3")
         #self.sample1()
+
+        self.comparar("1/2","1/3")
         
+    def sample2(self):
+        self.play(
+            Write(Mobject("Hello World"))
+        )
+    
     def sample1(self):
         
         UNITY_WIDTH = 2
@@ -77,6 +85,104 @@ class Teste(Scene):
         self.wait()
 
         self.multiplyUnits(u2, u3, nonColoredCells, "FadeIn", BLACK)
+        
+    def comparar(self, n1, n2, trichotomy = True):
+
+        info = (n1+"/"+n2).split("/")
+        a = int(info[0])
+        b = int(info[1])
+        c = int(info[2])
+        d = int(info[3])
+
+        equalsNotSure = TexMobject(r"\overset{?}{=}")
+        equalsTrue = TexMobject(r"\overset{}{=}")
+        equalsFalse = TexMobject(r"\overset{}{\neq}")
+        lessThan = TexMobject(r"\overset{}{<}")
+        moreThan = TexMobject(r"\overset{}{>}")
+
+        if a<0:
+            cor1=RED
+        else:
+            cor1=BLUE
+
+        if c<0:
+            cor2=RED
+        else:
+            cor2=BLUE
+
+        text1 = TexMobject(
+            r"\text{Vamos verificar se }{"+str(a)+r"\phantom{}"+r"\over"+str(b)+r"} = {"+str(c)+r"\phantom{}"+r"\over"+str(d)+r"}.",
+            tex_to_color_map={"{"+str(a)+r"\phantom{}": cor1,"{"+str(c)+r"\phantom{}": cor2}
+        ).to_corner(UP)
+            
+        if a*d==b*c:
+            equalsResult = equalsTrue
+            text2 = TexMobject(r"\text{S\~ao iguais.}")
+        else:
+            if trichotomy:
+                if a/b < c/d:
+                    equalsResult = lessThan
+                    text2 = TexMobject(r"\text{A primeira fra\c{c}\~ao eh menor.}")
+                else:
+                    equalsResult = moreThan
+                    text2 = TexMobject(r"\text{A primeira fra\c{c}\~ao eh maior.}")
+            else:
+                equalsResult = equalsFalse
+                text2 = TexMobject(r"\text{S\~ao diferentes.}")
+        
+        text2=text2.to_corner(DOWN)#.next_to(text1,DOWN)
+
+        UNITY_WIDTH = 2
+        position1 = 3*LEFT 
+        position2 = 3*RIGHT
+
+        u1 = Unity(width=UNITY_WIDTH, nColumns = b, nRows = 1, position = position1, cells=[])
+        u2 = Unity(width=UNITY_WIDTH, nColumns = 1, nRows = d, position = position2, cells=[])
+
+        # Pintar os numeradores
+
+        h1 = [] 
+        h2 = []
+        
+        for i in range(abs(a)): 
+            h1.append(i)
+        for i in range(abs(c)): 
+            h2.append(abs(c)-i-1)
+
+        u1.highLightCells(h1, cor1)
+        u2.highLightCells(h2, cor2)
+
+        self.play(Write(text1))
+
+        self.plotUnity(u1)
+
+        self.play(Write(
+            equalsNotSure
+        ))
+
+        self.plotUnity(u2)
+
+        self.wait()
+
+        # Particionar
+
+        u1 = self.partitionate(u1,"HORIZONTAL",d)
+
+        u2 = self.partitionate(u2,"VERTICAL",b)
+
+        self.normalizeUnity(u1)
+
+        self.normalizeUnity(u2)
+
+        self.wait()
+
+        self.play(
+            Transform(equalsNotSure,equalsResult)
+        )
+        
+        self.play(Write(
+            text2
+        ))
 
     def dividir(self, n1, n2):
         # transforma a string recebida em 4 variáveis:
@@ -108,13 +214,23 @@ class Teste(Scene):
         else:
             cor3 = RED
 
-        titulo = TexMobject(
+        text1 = TexMobject(
             r"\text{Vamos resolver }{"+str(a)+r"\phantom{}"+r"\over"+str(b)+r"} : {"+str(c)+r"\phantom{}"+r"\over"+str(d)+r"}",
             tex_to_color_map={"{"+str(a)+r"\phantom{}": cor1,"{"+str(c)+r"\phantom{}": cor2}
         ).to_corner(UP)
         
+        text2 = TexMobject(
+            r" = {"+str(a*d*c//(abs(c)))+r"\phantom{}"+r"\over"+str(abs(b*c))+r"}",
+            tex_to_color_map={"{"+str(a*d*c//(abs(c)))+r"\phantom{}": cor3}
+        )
+
+        positionText1 = text1.get_center() + text2.get_width()/2 * LEFT
+        
+        text1 = text1.move_to(positionText1)
+        text2 = text2.next_to(text1, RIGHT)
+
         self.play(Write(
-            titulo
+            text1
         ))
 
         # Criar unidades (Denominadores)
@@ -198,10 +314,16 @@ class Teste(Scene):
 
         self.transferDestroyCells(u1,u3,o1,t1,cor1,0.3,cor3)
 
+        self.wait()
+
         u2.highLightCells(o2,cor2)
         u1.highLightCells(o1,cor1)
         
         self.wait()
+
+        self.play(Write(
+            text2
+        ))
 
     def multiplicar(self,n1,n2):
         # transforma a string recebida em 4 variáveis:
@@ -233,13 +355,23 @@ class Teste(Scene):
         else:
             cor3 = RED
 
-        titulo = TexMobject(
+        text1 = TexMobject(
             r"\text{Vamos resolver }{"+str(a)+r"\phantom{}"+r"\over"+str(b)+r"} \times {"+str(c)+r"\phantom{}"+r"\over"+str(d)+r"}",
             tex_to_color_map={"{"+str(a)+r"\phantom{}": cor1,"{"+str(c)+r"\phantom{}": cor2}
         ).to_corner(UP)
         
+        text2 = TexMobject(
+            r" = {"+str(a*c)+r"\phantom{}"+r"\over"+str(b*d)+r"}",
+            tex_to_color_map={"{"+str(a*c)+r"\phantom{}": cor3}
+        )
+
+        positionText1 = text1.get_center() + text2.get_width()/2 * LEFT
+        
+        text1 = text1.move_to(positionText1)
+        text2 = text2.next_to(text1, RIGHT)
+
         self.play(Write(
-            titulo
+            text1
         ))
 
         # Criar unidades (Denominadores)
@@ -301,6 +433,8 @@ class Teste(Scene):
 
         self.moveUnity(u3,position3)
         
+        self.wait()
+
         # Deformar Unidade 2 para células coloridas da Unidade 1 
         # Encontrar células coloridas da u3
         coloredCells = []
@@ -325,6 +459,10 @@ class Teste(Scene):
         self.wait()
 
         self.multiplyUnits(u2, u3, nonColoredCells, "FadeIn", BLACK)
+        
+        self.play(Write(
+            text2
+        ))
 
     def somaAlgebrica(self,n1,n2,simplifySignal = True):
         # transforma a string recebida em 4 variáveis:
@@ -358,13 +496,28 @@ class Teste(Scene):
         else:
             cor2=BLUE
 
-        titulo = TexMobject(
+        if soma>=0:
+            cor3 = BLUE
+        else:
+            cor3 = RED
+
+        text1 = TexMobject(
             r"\text{Vamos resolver }{"+str(a)+r"\phantom{}"+r"\over"+str(b)+r"} + {"+str(c)+r"\phantom{}"+r"\over"+str(d)+r"}",
             tex_to_color_map={"{"+str(a)+r"\phantom{}": cor1,"{"+str(c)+r"\phantom{}": cor2}
         ).to_corner(UP)
         
+        text2 = TexMobject(
+            r" = {"+str(a*d+b*c)+r"\phantom{}"+r"\over"+str(b*d)+r"}",
+            tex_to_color_map={"{"+str(a*d+b*c)+r"\phantom{}": cor3}
+        )
+
+        positionText1 = text1.get_center() + text2.get_width()/2 * LEFT
+        
+        text1 = text1.move_to(positionText1)
+        text2 = text2.next_to(text1, RIGHT)
+
         self.play(Write(
-            titulo
+            text1
         ))
 
         # Criar unidades (Denominadores)
@@ -463,10 +616,10 @@ class Teste(Scene):
             eliminationOrigin = o2[:m]
             eliminationTarget = t2[:m] 
             # A parte que irá completar o resultado |u1| > |u2|
-            thereIsARemainder = abs(a/b) > abs(c/d)
+            thereIsARemainder = abs(a/b) != abs(c/d)
             if thereIsARemainder:
                 remainderOrigin = o2[-d:]
-                remainderTarget = t2[-d:]
+                remainderTarget = t2[:d]#t2[-d:]
 
             # Zerar fração
             self.transferDestroyCells(u2,u3,eliminationOrigin,eliminationTarget,cor2)
@@ -481,6 +634,10 @@ class Teste(Scene):
         u2.highLightCells(o2, cor2)
 
         self.wait()
+
+        self.play(Write(
+            text2
+        ))
 
     # Método obsoleto (pela somaAlgebrica)
     def somar(self,n1,n2):
@@ -1171,6 +1328,7 @@ class Teste(Scene):
         else:
             print("Multiply function -> Your animation atribute has no valid animations")
 
-
+    def deformUnity(self, unity, newpos, newWidth, newHeight):
+        print("Em manutenção...")
 
 # See old_projects folder for many, many more

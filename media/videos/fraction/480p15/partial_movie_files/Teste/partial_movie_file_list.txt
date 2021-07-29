@@ -21,3 +21,4 @@ file 'C:/Users/Lenovo/Documents/GitHub/ManimUnity/media/videos/fraction/480p15/p
 file 'C:/Users/Lenovo/Documents/GitHub/ManimUnity/media/videos/fraction/480p15/partial_movie_files/Teste/00020.mp4'
 file 'C:/Users/Lenovo/Documents/GitHub/ManimUnity/media/videos/fraction/480p15/partial_movie_files/Teste/00021.mp4'
 file 'C:/Users/Lenovo/Documents/GitHub/ManimUnity/media/videos/fraction/480p15/partial_movie_files/Teste/00022.mp4'
+file 'C:/Users/Lenovo/Documents/GitHub/ManimUnity/media/videos/fraction/480p15/partial_movie_files/Teste/00023.mp4'
